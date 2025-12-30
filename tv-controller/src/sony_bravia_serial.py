@@ -85,10 +85,14 @@ class SonyBraviaSerial(BaseTVController):
             except ValueError as e:
                 error_msg = str(e)
                 if "No response" in error_msg:
-                    logger.warning(f"[{self.port}] TV is powered off - standby mode will be set when TV is turned on manually")
+                    logger.warning(
+                        f"[{self.port}] TV is powered off - standby mode will be set when TV is turned on manually"
+                    )
                 elif "Parse Error" in error_msg or "Command Canceled" in error_msg:
                     # These are expected when standby mode is already enabled or not applicable
-                    logger.info(f"[{self.port}] Standby mode already configured or not needed")
+                    logger.info(
+                        f"[{self.port}] Standby mode already configured or not needed"
+                    )
                 else:
                     logger.warning(f"[{self.port}] Could not enable standby mode: {e}")
 
@@ -137,7 +141,9 @@ class SonyBraviaSerial(BaseTVController):
             raise ValueError("No response from TV")
         else:
             status = response[1]
-            status_msg = self.STATUS_MESSAGES_SET.get(status, f"Unknown status: {status:#04x}")
+            status_msg = self.STATUS_MESSAGES_SET.get(
+                status, f"Unknown status: {status:#04x}"
+            )
 
             if status != 0x00:
                 # Log error responses at DEBUG level; caller will handle logging/reporting
@@ -174,7 +180,9 @@ class SonyBraviaSerial(BaseTVController):
             raise ValueError("No response from TV")
         else:
             status = response[1]
-            status_msg = self.STATUS_MESSAGES_GET.get(status, f"Unknown status: {status:#04x}")
+            status_msg = self.STATUS_MESSAGES_GET.get(
+                status, f"Unknown status: {status:#04x}"
+            )
 
             if status == 0x00:
                 return_data_size = response[2]

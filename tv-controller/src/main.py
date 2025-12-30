@@ -18,7 +18,7 @@ except ImportError:
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL, logging.INFO),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,9 @@ def create_tv_controller(config: dict):
         }
     """
     # Default to Sony Bravia Serial protocol if not specified
-    protocol_class_path = config.get("protocol_class", "sony_bravia_serial.SonyBraviaSerial")
+    protocol_class_path = config.get(
+        "protocol_class", "sony_bravia_serial.SonyBraviaSerial"
+    )
 
     # Split into module and class name
     module_name, class_name = protocol_class_path.rsplit(".", 1)
