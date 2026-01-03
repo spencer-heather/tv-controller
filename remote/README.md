@@ -27,12 +27,14 @@ Edit `src/config.py`:
 
 - `button_config.chip_name` is almost certainly `/dev/gpiochip0`.
 - `power_pin`: the input pin for the power button
-- `tv_switch_pin`: the pin controlling the toggle between TVs
-- `tv_ids`: keys `up` (toggle switch up), `down` (toggle switch down); values are the tv IDs defined in [the TV serial controller's config](../tv-controller/README.md#configuration)
+- [Optional] `tv_switch_pin`: the pin controlling the toggle between TVs
+- `tv_ids`: array of TVs defined in [the TV serial controller's config](../tv-controller/README.md#configuration)
 
 ## Wiring setup
 
 - Connect 3.3V (pin 1) to power switch input
 - Connect power switch output to `config.power_pin` (e.g. GPIO 16)
+
+Optional, if using a toggle switch to switch between the control of two TVs:
 - Connect 3.3V (pin 1) to tv toggle switch input
 - Connect tv toggle switch output to `config.tv_switch_pin` (e.g. GPIO 17)

@@ -16,7 +16,7 @@ class RemoteControlGPIO:
 
         self.initialize_chip(button_config["chip_name"])
         self.power_pin = button_config["power_pin"]
-        self.tv_switch_pin = button_config["tv_switch_pin"]
+        self.tv_switch_pin = button_config.get("tv_switch_pin")
         self.tv_ids = button_config["tv_ids"]
 
         self.setup_gpio()
@@ -26,22 +26,21 @@ class RemoteControlGPIO:
         self.chip = chip
 
     def setup_gpio(self):
-        power_settings = gpiod.LineSettings(
+        line_config = dict()
+        line_config[self.power_pin] = gpiod.LineSettings(
             direction=gpiod.line.Direction.INPUT,
             bias=gpiod.line.Bias.PULL_DOWN,
             edge_detection=gpiod.line.Edge.RISING,
         )
 
-        tv_switch_settings = gpiod.LineSettings(
-            direction=gpiod.line.Direction.INPUT,
-            bias=gpiod.line.Bias.PULL_DOWN,
-        )
+        if self.tv_switch_pin is not None:
+            line_config[self.tv_switch_pin] = gpiod.LineSettings(
+                direction=gpiod.line.Direction.INPUT,
+                bias=gpiod.line.Bias.PULL_DOWN,
+            )
 
         self.line_request = self.chip.request_lines(
-            config={
-                self.power_pin: power_settings,
-                self.tv_switch_pin: tv_switch_settings,
-            },
+            config=line_config,
             consumer="remote_control",
         )
         logger.info("GPIO settings initialized")
@@ -80,8 +79,12 @@ class RemoteControlGPIO:
             raise SystemExit()
 
     def get_current_tv_id(self):
-        tv_switch_value = self.line_request.get_value(self.tv_switch_pin)
-        current_tv_id = self.tv_ids["up"] if tv_switch_value else self.tv_ids["down"]
+        if self.tv_switch_pin is not None:
+            tv_switch_value = self.line_request.get_value(self.tv_switch_pin)
+            current_tv_id = self.tv_ids[0] if tv_switch_value else self.tv_ids[1]
+        else:
+            current_tv_id = self.tv_ids[0]
+
         logger.debug(f"Current TV ID: {current_tv_id}")
         return current_tv_id
 
