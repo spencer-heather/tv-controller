@@ -44,3 +44,41 @@ Edit `src/config.py`:
 Optional, if using a toggle switch to switch between the control of two TVs:
 - Connect 3.3V (pin 1) to tv toggle switch input
 - Connect tv toggle switch output to `config.tv_switch_pin` (e.g. GPIO 17)
+
+
+### Deploying using systemd
+
+
+Create `/etc/systemd/system/remote.service`:
+
+```ini
+[Unit]
+Description=TV Controller REST API
+After=network.target
+
+[Service]
+Type=simple
+User={{username}}
+WorkingDirectory={{repo_root}}/remote/src
+ExecStart={{repo_root}}/remote/src/main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Replace `{{username}}` and `{{repo_root}}` with your values.
+
+Enable and start:
+
+```bash
+sudo systemctl enable remote
+sudo systemctl start remote
+sudo systemctl status remote
+```
+
+View logs:
+
+```bash
+sudo journalctl -u remote -f
+```
