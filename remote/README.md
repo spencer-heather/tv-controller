@@ -27,6 +27,7 @@ Edit `src/config.py`:
 
 - `button_config.chip_name` is almost certainly `/dev/gpiochip0`.
 - `power_pin`: the input pin for the power button
+- `volume_pin_ctk`, `volume_pin_dt`, `volume_mute_pin`: the input pins for the volume controls
 - [Optional] `tv_switch_pin`: the pin controlling the toggle between TVs
 - `tv_ids`: array of TVs defined in [the TV serial controller's config](../tv-controller/README.md#configuration)
 
@@ -34,6 +35,11 @@ Edit `src/config.py`:
 
 - Connect 3.3V (pin 1) to power switch input
 - Connect power switch output to `config.power_pin` (e.g. GPIO 16)
+- Connect volume rotary encoder output CLK to `config.volume_pin_clk` (e.g. GPIO 13)
+- Connect volume rotary encoder output DT to `config.volume_pin_dt` (e.g. GPIO 19)
+- Connect volume rotary encoder output SW to `config.volume_mute_pin` (e.g. GPIO 26)
+- Connect volume rotary encoder output + to 3.3V (pin 1)
+- Connect volume rotary encoder ground to GND
 
 Optional, if using a toggle switch to switch between the control of two TVs:
 - Connect 3.3V (pin 1) to tv toggle switch input
