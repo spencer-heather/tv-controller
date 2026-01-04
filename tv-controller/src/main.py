@@ -90,11 +90,11 @@ def power_on(tv_id: AllTVId):
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
             tv.power_on()
-            results[tv_id_str] = "ok"
+            results[tv_id_str] = {"status": "ok", "power": "on"}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/power/off")
@@ -103,11 +103,11 @@ def power_off(tv_id: AllTVId):
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
             tv.power_off()
-            results[tv_id_str] = "ok"
+            results[tv_id_str] = {"status": "ok", "power": "off"}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/standby/on")
@@ -116,11 +116,11 @@ def standby_on(tv_id: AllTVId):
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
             tv.standby_on()
-            results[tv_id_str] = "ok"
+            results[tv_id_str] = {"status": "ok", "standby": "enabled"}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/standby/off")
@@ -129,11 +129,11 @@ def standby_off(tv_id: AllTVId):
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
             tv.standby_off()
-            results[tv_id_str] = "ok"
+            results[tv_id_str] = {"status": "ok", "standby": "disabled"}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/power/toggle")
@@ -141,12 +141,13 @@ def toggle_power(tv_id: AllTVId):
     results = {}
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
-            tv.toggle_power()
-            results[tv_id_str] = "ok"
+            power_state = tv.toggle_power()
+            power_str = "on" if power_state == tv.POWER_ON_DATA else "off"
+            results[tv_id_str] = {"status": "ok", "power": power_str}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/volume/up")
@@ -165,11 +166,12 @@ def volume_up(
                 if step > 1:
                     time.sleep(0.1)
 
-            results[tv_id_str] = "ok"
+            final_volume = tv.get_volume_value()
+            results[tv_id_str] = {"status": "ok", "volume": final_volume}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.post("/tv/{tv_id}/volume/down")
@@ -187,24 +189,26 @@ def volume_down(
                 tv.volume_down()
                 if step > 1:
                     time.sleep(0.1)
-            results[tv_id_str] = "ok"
+            final_volume = tv.get_volume_value()
+            results[tv_id_str] = {"status": "ok", "volume": final_volume}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
-@app.post("/tv/{tv_id}/volume/mute/toggle")
+@app.post("/tv/{tv_id}/mute/toggle")
 def toggle_mute(tv_id: AllTVId):
     results = {}
     for tv_id_str, tv in _get_tvs(tv_id):
         try:
-            tv.toggle_mute()
-            results[tv_id_str] = "ok"
+            mute_state = tv.toggle_mute()
+            mute_str = "unmuted" if mute_state == tv.MUTE_DATA else "muted"
+            results[tv_id_str] = {"status": "ok", "mute": mute_str}
         except Exception as e:
-            results[tv_id_str] = f"error: {e}"
+            results[tv_id_str] = {"status": "error", "message": e}
 
-    return {"status": results}
+    return results
 
 
 @app.get("/tv/{tv_id}/power")
@@ -213,6 +217,27 @@ def get_power_state(tv_id: TVId):
         tv = tvs[tv_id.value]
         power_state = tv.get_power_state()
         power_str = "on" if power_state == tv.POWER_ON_DATA else "off"
-        return {"tv_id": tv_id.value, "power": power_str}
+        return {tv_id.value: {"status": "ok", "power": power_str}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/tv/{tv_id}/volume")
+def get_volume_value(tv_id: TVId):
+    try:
+        tv = tvs[tv_id.value]
+        volume_value = tv.get_volume_value()
+        return {tv_id.value: {"status": "ok", "volume": volume_value}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/tv/{tv_id}/mute")
+def get_mute_state(tv_id: TVId):
+    try:
+        tv = tvs[tv_id.value]
+        mute_state = tv.get_mute_state()
+        mute_str = "unmuted" if mute_state == tv.MUTE_DATA else "muted"
+        return {tv_id.value: {"status": "ok", "mute": mute_str}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

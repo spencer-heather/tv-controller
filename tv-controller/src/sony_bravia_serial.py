@@ -190,11 +190,7 @@ class SonyBraviaSerial(BaseTVController):
                 logger.debug(
                     f"[{self.port}] Data received: {[hex(b) for b in return_data]}"
                 )
-                value = return_data[0]
-                logger.info(
-                    f"[{self.port}] GET command response: {status_msg} - Value: {value:#04x}"
-                )
-                return value
+                return return_data
             else:
                 # Log error responses at DEBUG level; caller will handle logging/reporting
                 logger.debug(f"[{self.port}] GET command response: {status_msg}")
@@ -218,8 +214,10 @@ class SonyBraviaSerial(BaseTVController):
         power_state = self.get_power_state()
         if power_state == self.POWER_OFF_DATA:
             self.power_on()
+            return self.POWER_ON_DATA
         elif power_state == self.POWER_ON_DATA:
             self.power_off()
+            return self.POWER_OFF_DATA
 
     def volume_up(self):
         self._send_set_command(
@@ -233,7 +231,20 @@ class SonyBraviaSerial(BaseTVController):
 
     def toggle_mute(self):
         self._send_set_command([self.MUTE_DATA], self.MUTE_FUNCTION)
+        mute_state = self.get_mute_state()
+        return mute_state
 
     def get_power_state(self):
-        power_state = self._send_get_command(self.POWER_FUNCTION)
+        return_data = self._send_get_command(self.POWER_FUNCTION)
+        power_state = return_data[0]
         return power_state
+
+    def get_volume_value(self):
+        return_data = self._send_get_command(self.VOLUME_FUNCTION)
+        volume_value = return_data[1]
+        return volume_value
+
+    def get_mute_state(self):
+        return_data = self._send_get_command(self.MUTE_FUNCTION)
+        mute_state = return_data[1]
+        return mute_state

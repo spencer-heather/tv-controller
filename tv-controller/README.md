@@ -135,7 +135,11 @@ Auto-generated interactive docs:
 
 **Volume:**
 - `POST /tv/{tv_id}/volume/up|down?step=N`
-- `POST /tv/{tv_id}/volume/mute/toggle`
+- `GET /tv/{tv_id}/volume`
+
+**Mute:**
+- `POST /tv/{tv_id}/mute/toggle`
+- `GET /tv/{tv_id}/mute`
 
 **Standby (Sony Bravia):**
 - `POST /tv/{tv_id}/standby/on|off`

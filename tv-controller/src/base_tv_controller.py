@@ -41,12 +41,18 @@ class BaseTVController(ABC):
 
     @abstractmethod
     def toggle_power(self):
-        """Toggle the TV power state."""
+        """
+        Toggle the TV power state.
+
+        Returns:
+            int: Power state code (implementation-specific)
+        """
         pass
 
     @abstractmethod
     def volume_up(self):
-        """Increase volume by one step."""
+        """
+        Increase volume by one step."""
         pass
 
     @abstractmethod
@@ -56,7 +62,12 @@ class BaseTVController(ABC):
 
     @abstractmethod
     def toggle_mute(self):
-        """Toggle mute state."""
+        """
+        Toggle mute state.
+
+        Returns:
+            int: Mute state code (implementation-specific)
+        """
         pass
 
     @abstractmethod
@@ -66,6 +77,26 @@ class BaseTVController(ABC):
 
         Returns:
             int: Power state code (implementation-specific)
+        """
+        pass
+
+    @abstractmethod
+    def get_volume_value(self):
+        """
+        Get current volume value.
+
+        Returns:
+            int: Current volume
+        """
+        pass
+
+    @abstractmethod
+    def get_mute_state(self):
+        """
+        Get current mute state.
+
+        Returns:
+            int: Mute state code (implementation-specific)
         """
         pass
 
