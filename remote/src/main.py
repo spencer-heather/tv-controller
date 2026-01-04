@@ -212,8 +212,8 @@ class RemoteControlGPIO:
                 "https://homeassistant.somanydoors.ca/api/webhook/tv_remote",
                 json={
                     "tv_id": self.get_current_tv_id(),
-                    "command": "volume",
-                    "subcommand": "mute/toggle",
+                    "command": "mute",
+                    "subcommand": "toggle",
                 },
             )
         except RequestException as e:
