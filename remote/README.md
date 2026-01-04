@@ -15,6 +15,8 @@ python3 -m pip install -r requirements.txt
 
 ## Configuration
 
+**This step assumes you have already set up your [tv serial controller](../tv-controller/README.md) and your [Home Assistant pass-through endpoint and automation](../home-assistant/README.md).**
+
 Copy the template and configure your TVs:
 
 ```bash
@@ -23,11 +25,19 @@ cp src/config.template.py src/config.py
 
 Edit `src/config.py`:
 
+### `HOME_ASSISTANT_WEBHOOK_URL`
+
+The URL for the pass-through Automation set up using Home Assistant. This will be in the format `${home_assistant_url_or_ip}/api/webhook/${webhook_id}`, where `webhook_id` is the value of `triggers[0].webhook_id` in [the automation.yaml file](../home-assistant/automation.yaml).
+
+### `LOG_LEVEL`
+
+- DEBUG, INFO, WARNING, ERROR (default: INFO)
+
 ### `button_config`
 
 - `button_config.chip_name` is almost certainly `/dev/gpiochip0`.
 - `power_pin`: the input pin for the power button
-- `volume_pin_ctk`, `volume_pin_dt`, `volume_mute_pin`: the input pins for the volume controls
+- `volume_pin_ctk`, `volume_pin_dt`, `volume_mute_pin`: the input pins for the volume controls (volume mute will be the SW pin on the rotary encoder)
 - [Optional] `tv_switch_pin`: the pin controlling the toggle between TVs
 - `tv_ids`: array of TVs defined in [the TV serial controller's config](../tv-controller/README.md#configuration)
 

@@ -1,0 +1,5 @@
+rest_command:
+  tv:
+    url: ${BASE_URL}:${PORT}/tv/{{ tv_id }}/{{ command }}/{{ subcommand }}{%- if params is defined and params %}?{{ params | urlencode }}{% endif %}
+    method: post
+    content_type: "application/json"

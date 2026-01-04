@@ -1,0 +1,18 @@
+alias: TV control via webhook
+description: ""
+triggers:
+  - trigger: webhook
+    allowed_methods:
+      - POST
+    local_only: true
+    webhook_id: tv_remote
+conditions: []
+actions:
+  - action: rest_command.tv
+    metadata: {}
+    data:
+      tv_id: "{{ trigger.json.tv_id }}"
+      command: "{{ trigger.json.command }}"
+      subcommand: "{{ trigger.json.subcommand }}"
+      params: "{{ trigger.json.params | default({}) }}"
+mode: single

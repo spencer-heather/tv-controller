@@ -11,3 +11,5 @@ button_config = {
 
 # Optional: "DEBUG", "INFO", "WARNING", "ERROR"
 LOG_LEVEL = "INFO"
+
+HOME_ASSISTANT_WEBHOOK_URL = "${home_assistant_url_or_ip}/api/webhook/${trigger_id}"

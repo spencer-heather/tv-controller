@@ -6,7 +6,12 @@ button_config = {
     "volume_pin_dt": 19,
     "volume_mute_pin": 26,
     "tv_switch_pin": 17,
+    "tv_power_on_led_pin": 23,
     "tv_ids": ["top", "bottom"],
 }
 
 LOG_LEVEL = "INFO"
+
+HOME_ASSISTANT_WEBHOOK_URL = (
+    "https://homeassistant.somanydoors.ca/api/webhook/tv_remote"
+)

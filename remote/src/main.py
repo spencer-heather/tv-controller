@@ -2,7 +2,7 @@
 
 import time
 import gpiod
-from config import button_config
+from config import button_config, HOME_ASSISTANT_WEBHOOK_URL
 import logging
 import requests
 from requests.exceptions import RequestException
@@ -15,12 +15,15 @@ except ImportError:
 
 
 class RemoteControlGPIO:
-    def __init__(self, button_config):
+    def __init__(self, button_config, home_assistant_webhook_url):
+        self.home_assistant_webhook_url = home_assistant_webhook_url
+
         self.initialize_chip(button_config["chip_name"])
 
         self.power_pin = button_config["power_pin"]
         self.power_last_event_time = 0
         self.power_debounce_ns = 200_000_000
+        self.tv_power_on_led_pin = button_config["tv_power_on_led_pin"]
 
         self.volume_pin_clk = button_config["volume_pin_clk"]
         self.volume_pin_dt = button_config["volume_pin_dt"]
@@ -46,6 +49,11 @@ class RemoteControlGPIO:
             direction=gpiod.line.Direction.INPUT,
             bias=gpiod.line.Bias.PULL_DOWN,
             edge_detection=gpiod.line.Edge.RISING,
+        )
+
+        line_config[self.tv_power_on_led_pin] = gpiod.LineSettings(
+            direction=gpiod.line.Direction.OUTPUT,
+            output_value=gpiod.line.Value.INACTIVE,
         )
 
         rotary_encoder_settings = gpiod.LineSettings(
@@ -140,7 +148,7 @@ class RemoteControlGPIO:
 
         try:
             requests.post(
-                "https://homeassistant.somanydoors.ca/api/webhook/tv_remote",
+                self.home_assistant_webhook_url,
                 json={
                     "tv_id": self.get_current_tv_id(),
                     "command": "power",
@@ -177,7 +185,7 @@ class RemoteControlGPIO:
 
         try:
             requests.post(
-                "https://homeassistant.somanydoors.ca/api/webhook/tv_remote",
+                self.home_assistant_webhook_url,
                 json={
                     "tv_id": self.get_current_tv_id(),
                     "command": "volume",
@@ -193,7 +201,7 @@ class RemoteControlGPIO:
 
         try:
             requests.post(
-                "https://homeassistant.somanydoors.ca/api/webhook/tv_remote",
+                self.home_assistant_webhook_url,
                 json={
                     "tv_id": self.get_current_tv_id(),
                     "command": "volume",
@@ -209,7 +217,7 @@ class RemoteControlGPIO:
 
         try:
             requests.post(
-                "https://homeassistant.somanydoors.ca/api/webhook/tv_remote",
+                self.home_assistant_webhook_url,
                 json={
                     "tv_id": self.get_current_tv_id(),
                     "command": "mute",
@@ -226,7 +234,7 @@ def main():
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    with RemoteControlGPIO(button_config) as remote:
+    with RemoteControlGPIO(button_config, HOME_ASSISTANT_WEBHOOK_URL) as remote:
         remote.run()
 
 
